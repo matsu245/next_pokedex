@@ -14,22 +14,6 @@ export const Pagination: React.FC<Props> = ({ perPage, offset, totalItems, setOf
   const router = useRouter();
   const totalPages = Math.ceil(totalItems / perPage);
 
-  // コンポーネントがマウントされたときにページ番号を取得
-  useEffect(() => {
-    const pathSegments = window.location.pathname.split('/');
-    const pageParam = pathSegments[pathSegments.length - 1]; // URLの最後のセグメントを取得
-    const page = parseInt(pageParam, 10);
-    console.log('===============');
-    console.log(page);
-    console.log(totalItems);
-    
-    // 有効なページ番号が取得できた場合、offsetを更新
-    if (!isNaN(page) && page !== offset) {
-      setOffset(page);
-    }
-  }, [totalItems]);
-  
-
   const nextPage = () => {
     //console.log(offset);
     const necessaryButtonCount = Math.ceil(totalItems / perPage);
