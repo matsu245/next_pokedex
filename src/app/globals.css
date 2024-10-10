@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+.cmn-container {
+  background-color: hsla(259, 100%, 63%, 0.5);
+  background-image: radial-gradient(circle at 15% 85%, hsla(318, 80%, 97%, 0.9) 19%, transparent 84%), radial-gradient(circle at 31% 1%, hsla(161, 99%, 87%, 0.9) 12%, transparent 85%), radial-gradient(circle at 88% 87%, hsla(163, 90%, 78%, 0.9) 3.6400864520532363%, transparent 75.20902830975928%), radial-gradient(circle at 30% 27%, hsla(314, 91%, 59%, 0.9) 14%, transparent 90%);
+  background-blend-mode: normal, normal, normal, normal;
+}
+
+.cmn-container::before {
+  background: linear-gradient(to bottom, #02c8a7 0, #02c8a7 100%) 0 0 / 8px repeat-y, linear-gradient(to bottom, #7cdbd5 0, #7cdbd5 100%) 100% 0 / 8px repeat-y, linear-gradient(to bottom, #02c8a7 0, #02c8a7 100%) 0 0 / auto 8px repeat-x, linear-gradient(to bottom, #7cdbd5 0, #7cdbd5 100%) 0 100% / auto 8px repeat-x;
+}
