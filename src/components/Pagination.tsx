@@ -1,6 +1,4 @@
-import React, { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import React from 'react';
 
 interface Props {
   perPage: number;
@@ -11,8 +9,6 @@ interface Props {
 }
 
 export const Pagination: React.FC<Props> = ({ perPage, offset, totalItems, setOffset, changeOffset }) => {
-  const router = useRouter();
-  const totalPages = Math.ceil(totalItems / perPage);
 
   const nextPage = () => {
     //console.log(offset);

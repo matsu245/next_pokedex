@@ -1,15 +1,14 @@
-import Link from 'next/link';
+import Image from "next/image";
 import { Pokemon } from '@/types/Pokemon';
 
 type Props = {
   detailedPokemonList: Pokemon[];
   paginatedPokemonList: Pokemon[];
-  isModalOpen: boolean;
   openModal: () => void;
   setSelectedPokemon: (pokemon: Pokemon) => void;
 };
 
-export const List: React.FC<Props> = ({ detailedPokemonList, paginatedPokemonList, isModalOpen, openModal, setSelectedPokemon }) => {
+export const List: React.FC<Props> = ({ detailedPokemonList, paginatedPokemonList, openModal, setSelectedPokemon }) => {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 mb-6">
 
@@ -30,7 +29,9 @@ export const List: React.FC<Props> = ({ detailedPokemonList, paginatedPokemonLis
                 setSelectedPokemon(result);
               }}
             >
-              <img src={result.image.thumb} />
+              <figure>
+                <Image src={result.image.thumb} alt="" width={96} height={96}/>
+              </figure>
               <p>{result.jaName}</p>
             </div>
           );

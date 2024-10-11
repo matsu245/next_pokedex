@@ -1,4 +1,5 @@
 'use client';
+import Image from "next/image";
 import { List } from '@/components/List';
 import { Modal  } from '@/components/Modal';
 import { usePageHook } from '@/app/page.hooks';
@@ -72,7 +73,6 @@ export default function Home() {
     <div className="max-w-screen-2xl m-[auto]">
       <SearchForm
         detailedPokemonList={detailedPokemonList}
-        filteredPokemonList={filteredPokemonList}
         setFilteredPokemonList={setFilteredPokemonList}
         changeOffset={changeOffset}
       />
@@ -86,7 +86,6 @@ export default function Home() {
       <List 
         detailedPokemonList={detailedPokemonList}
         paginatedPokemonList={paginatedPokemonList}
-        isModalOpen={isModalOpen}
         openModal={openModal}
         setSelectedPokemon={setSelectedPokemon}
       />
@@ -111,7 +110,10 @@ export default function Home() {
               </span>
             ))}
           </p>
-          <figure className='w-[clamp(calc(200px-3rem),380px,100%)] aspect-square m-[auto]'><img src={selectedPokemon?.image.artwork} /></figure><img src='' />
+          { selectedPokemon?.image.artwork  && (
+          <figure className='w-[clamp(calc(200px-3rem),380px,100%)] aspect-square m-[auto]'><Image src={selectedPokemon?.image.artwork} alt="" width={500} height={500}/></figure>
+            )
+          }
           <h1 className='text-center font-bold text-2xl'>{selectedPokemon?.jaName}</h1>
           <p className='text-xs text-center mb-3 text-zinc-400'>{selectedPokemon?.roName}</p>
           <p className='mb-3 text-center'>{selectedPokemon?.jaGenus}</p>

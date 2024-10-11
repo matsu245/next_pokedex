@@ -4,18 +4,15 @@ import { usePageHook } from '@/app/page.hooks';
 
 interface Props {
   detailedPokemonList: Pokemon[]; // 全てのポケモン詳細データ
-  filteredPokemonList: Pokemon[]; // フィルタリングされたポケモンリスト
   setFilteredPokemonList: React.Dispatch<React.SetStateAction<Pokemon[]>>; // フィルタリング結果を更新する関数
   changeOffset: (num: number) => void;
 }
 
 export const SearchForm: React.FC<Props> = ({
   detailedPokemonList,
-  filteredPokemonList,
   setFilteredPokemonList,
   changeOffset,
 }) => {
-  const { offset } = usePageHook(); // usePageHookからoffsetとsetOffsetを取得
 
   const [searchTerm, setSearchTerm] = useState('');
 
