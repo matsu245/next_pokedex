@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Pokemon } from '@/types/Pokemon';
 import { PokemonType } from '@/types/PokemonType';
 import { Sprites } from '@/types/Sprites';
@@ -43,54 +43,6 @@ export const usePageHook = () => {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  useEffect(() => {
-    fetchPokemonTypes().then((data) => setPokemonTypes(data));
-  }, []);
-
-  useEffect(() => {
-    if (pokemonTypes.length > 0) {
-      fetchInitialPokemon().then((data) => setInitialPokemonList(data));
-      setFilteredPokemonList(initialPokemonList);
-    }
-  }, [pokemonTypes]);
-
-
-
-  useEffect(() => {
-    const fetchAllDetails = async () => {
-      const totalBatches = Math.ceil(initialPokemonList.length / perPage); // バッチ数を計算
-      for (let i = 0; i < totalBatches; i++) {
-        const start = i * perPage; // 現在のバッチの開始インデックス
-        const end = start + perPage; // 現在のバッチの終了インデックス
-        const pokemonBatch = initialPokemonList.slice(start, end); // 現在のバッチを取得
-        const promises = pokemonBatch.map((pokemon) => fetchPokemonDetails(pokemon)); // Promiseの配列を作成
-        try {
-          const detailedData = await Promise.all(promises); // 現在のバッチを並行して取得
-          setDetailedPokemonList((prevState) => {
-            // 現在の状態と新しく取得したデータを結合し、重複を排除する
-            const updatedList = [...prevState, ...detailedData];
-            const uniqueList = Array.from(new Set(updatedList.map(p => p.id))) // 'id'を使って重複を削除
-              .map(id => updatedList.find(p => p.id === id))
-              .filter((p): p is Pokemon => p !== undefined); // undefinedを除外
-            return uniqueList; // 重複のないデータを返す
-          });
-        } catch (error) {
-          console.error('Failed to fetch Pokémon details:', error);
-        }
-      }
-    };
-    if (initialPokemonList.length > 0) {
-      fetchAllDetails(); // ポケモンリストが存在すれば実行
-    }
-  }, [initialPokemonList]);
-
-  
-
-  useEffect(() => {
-    getPaginatedPokemonList(filteredPokemonList, offset, perPage).then((data) =>
-      setPaginatedPokemonList(data)
-    );
-  }, [initialPokemonList, offset, detailedPokemonList, filteredPokemonList]);
 
   const fetchInitialPokemon = async (): Promise<Pokemon[]> => {
     const res = await fetch(pokeApiUrl);
@@ -122,18 +74,17 @@ export const usePageHook = () => {
     return pokemon;
   };
 
-  const fetchPokemonDetails = async (result: Pokemon): Promise<Pokemon> => {
+  
+  const fetchPokemonDetails = useCallback(async (result: Pokemon): Promise<Pokemon> => {
     const response1 = await fetch(result.url);
-    // レスポンスが正常であることを確認
     if (!response1.ok) {
-      // throw new Error(Error fetching data: ${response1.statusText});
+      throw new Error(`Error fetching data: ${response1.statusText}`);
     }
     const data1: Sprites = await response1.json();
     const thumb = data1.sprites.front_default;
     const artwork = data1.sprites.other['official-artwork'].front_default;
     const speciesUrl = data1.species.url;
-    // console.log(speciesUrl);
-
+  
     let types: string[] = [];
     for (let i = 0; i < data1.types.length; i++) {
       const typeName = data1.types[i].type.name;
@@ -142,25 +93,19 @@ export const usePageHook = () => {
         types = [...types, typeObject.jaName];
       }
     }
-
+  
     let jaName = '???', roName = '???', jaGenus = '???', flavorText = '???';
     if (speciesUrl) {
       const response2 = await fetch(speciesUrl);
-
-      // レスポンスが正常であることを確認
       if (response2.ok) {
-        // JSONデータをSpecies型として取得
         const data2: Species = await response2.json();
-
-        // 日本語名と属名を取得
         jaName = data2.names.find((name) => name.language.name === 'ja')?.name || '???';
         roName = data2.names.find((name) => name.language.name === 'roomaji')?.name || '???';
         jaGenus = data2.genera.find((genus) => genus.language.name === 'ja')?.genus || '???';
         flavorText = data2.flavor_text_entries.find((flavor_text) => flavor_text.language.name === 'ja')?.flavor_text || '???';
       }
     }
-    
-    // 取得した情報を持つPostオブジェクトを作成
+  
     const post: Pokemon = {
       ...result,
       jaName: jaName,
@@ -173,10 +118,11 @@ export const usePageHook = () => {
       types: types,
       flavorText: flavorText,
     };
-
-    // Postオブジェクトを返す
+  
     return post;
-  };
+  }, [pokemonTypes]);
+
+
 
   const fetchAllPokemonTypes = async () => {
     const response = await fetch(`${baseUrl}type`);
@@ -197,12 +143,12 @@ export const usePageHook = () => {
     names: { language: { name: string }; name: string }[];
   };
   
-  const fetchPokemonTypes = async () => {
+  const fetchPokemonTypes = useCallback(async () => {
     try {
       const typeData: { results: PokemonTypeResult[] } = await fetchAllPokemonTypes();
       const types = await Promise.all(
         typeData.results.map(async (type: PokemonTypeResult) => {
-          const response = await fetch(type.url); // 各タイプの詳細URLを使用
+          const response = await fetch(type.url);
           if (response.ok) {
             const data: PokemonTypeDetails = await response.json();
             const jaName =
@@ -211,34 +157,21 @@ export const usePageHook = () => {
               )?.name || '???';
             return { name: data.name, jaName };
           }
-          return null; // エラー時はnullを返す
+          return null;
         })
       );
-      return types.filter((type) => type !== null); // nullを除外
+      return types.filter((type) => type !== null);
     } catch (error) {
       console.error(error);
-      return []; // エラー時は空の配列を返す
+      return [];
     }
-  };
+  }, []);
 
 
-  const getPaginatedPokemonList = async (
-    results: Pokemon[],
-    offset: number,
-    perPage: number
-  ): Promise<Pokemon[]> => {
-    const paginatedPokemonList = results.slice((offset - 1) * perPage, offset * perPage);
-
-    // Promise.allを使って並列にgetPokemonWithDetailsを呼び出す
-    const newResults = await Promise.all(
-      paginatedPokemonList.map((result) => getPokemonWithDetails(result))
-    );
-    return newResults;
-  };
-
-  const getPokemonWithDetails = async (result: Pokemon): Promise<Pokemon> => {
+  const getPokemonWithDetails = useCallback(async (result: Pokemon): Promise<Pokemon> => {
     let post;
     const index = detailedPokemonList.findIndex(({ name }) => name === result.name);
+    
     if (index === -1) {
       post = await fetchPokemonDetails(result);
     } else {
@@ -248,28 +181,96 @@ export const usePageHook = () => {
         post = detailedPokemonList[index];
       }
     }
+    
     return post;
-  };
+  }, [detailedPokemonList, fetchPokemonDetails]);
 
-  const nextPage = () => {
-    const necessaryButtonCount = Math.ceil(initialPokemonList.length / perPage);
-    if (necessaryButtonCount === offset) return;
-    setOffset((prevState) => prevState + 1);
-  };
 
-  const prevPage = () => {
-    if (offset === 1) return;
-    setOffset((prevState) => prevState - 1);
-  };
+  // const nextPage = () => {
+  //   const necessaryButtonCount = Math.ceil(initialPokemonList.length / perPage);
+  //   if (necessaryButtonCount === offset) return;
+  //   setOffset((prevState) => prevState + 1);
+  // };
 
-  const changeOffset = (num: number) => {
+  // const prevPage = () => {
+  //   if (offset === 1) return;
+  //   setOffset((prevState) => prevState - 1);
+  // };
+
+  const changeOffset = useCallback((num: number) => {
     setOffset(num);
-  };
+  }, []);
+
+  const getPaginatedPokemonList = useCallback(async (
+    results: Pokemon[],
+    offset: number,
+    perPage: number
+  ): Promise<Pokemon[]> => {
+    const paginatedPokemonList = results.slice((offset - 1) * perPage, offset * perPage);
+  
+    // Promise.allを使って並列にgetPokemonWithDetailsを呼び出す
+    const newResults = await Promise.all(
+      paginatedPokemonList.map((result) => getPokemonWithDetails(result))
+    );
+    return newResults;
+  }, [getPokemonWithDetails]);
+
+
+  useEffect(() => {
+    fetchPokemonTypes().then((data) => setPokemonTypes(data));
+  }, [fetchPokemonTypes]);
+
+  
+  useEffect(() => {
+    if (pokemonTypes.length > 0 && initialPokemonList.length === 0 ) {
+      fetchInitialPokemon().then((data) => setInitialPokemonList(data));
+      // setFilteredPokemonList(initialPokemonList);
+    }
+  }, [pokemonTypes, initialPokemonList]);
+
+
+
+  useEffect(() => {
+    const fetchAllDetails = async () => {
+      const totalBatches = Math.ceil(initialPokemonList.length / perPage); // バッチ数を計算
+      for (let i = 0; i < totalBatches; i++) {
+        const start = i * perPage; // 現在のバッチの開始インデックス
+        const end = start + perPage; // 現在のバッチの終了インデックス
+        const pokemonBatch = initialPokemonList.slice(start, end); // 現在のバッチを取得
+        const promises = pokemonBatch.map((pokemon) => fetchPokemonDetails(pokemon)); // Promiseの配列を作成
+        try {
+          const detailedData = await Promise.all(promises); // 現在のバッチを並行して取得
+          setDetailedPokemonList((prevState) => {
+            // 現在の状態と新しく取得したデータを結合し、重複を排除する
+            const updatedList = [...prevState, ...detailedData];
+            const uniqueList = Array.from(new Set(updatedList.map(p => p.id))) // 'id'を使って重複を削除
+              .map(id => updatedList.find(p => p.id === id))
+              .filter((p): p is Pokemon => p !== undefined); // undefinedを除外
+            return uniqueList; // 重複のないデータを返す
+          });
+        } catch (error) {
+          console.error('Failed to fetch Pokémon details:', error);
+        }
+      }
+    };
+    if (initialPokemonList.length > 0) {
+      fetchAllDetails(); // ポケモンリストが存在すれば実行
+    }
+  }, [initialPokemonList, fetchPokemonDetails]);
+
+  
+
+  useEffect(() => {
+    getPaginatedPokemonList(filteredPokemonList, offset, perPage).then((data) =>
+      setPaginatedPokemonList(data)
+    );
+  }, [offset, filteredPokemonList, getPaginatedPokemonList]);
+  
 
   return {
     totalPages: Math.ceil(initialPokemonList.length / perPage),
-    prevPage,
-    nextPage,
+    // prevPage,
+    // nextPage,
     offset,
     changeOffset,
     setOffset,

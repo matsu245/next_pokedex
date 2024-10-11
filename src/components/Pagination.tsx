@@ -11,16 +11,18 @@ interface Props {
 export const Pagination: React.FC<Props> = ({ perPage, offset, totalItems, setOffset, changeOffset }) => {
 
   const nextPage = () => {
-    //console.log(offset);
     const necessaryButtonCount = Math.ceil(totalItems / perPage);
     if (necessaryButtonCount === offset) return;
-    setOffset((prevState) => Math.min(prevState + 1, necessaryButtonCount));
+    setOffset((prevState) => {
+      return prevState + 1;
+    });
   };
 
   const prevPage = () => {
-    //console.log(offset);
     if (offset === 1) return;
-    setOffset((prevState) => Math.max(prevState - 1, 1));
+    setOffset((prevState) => {
+      return prevState - 1;
+    });
   };
 
   const getButtonCount = (totalLength: number, perPage: number): number[] => {

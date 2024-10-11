@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Pokemon } from '@/types/Pokemon';
-import { usePageHook } from '@/app/page.hooks';
 
 interface Props {
   detailedPokemonList: Pokemon[]; // 全てのポケモン詳細データ
@@ -29,7 +28,7 @@ export const SearchForm: React.FC<Props> = ({
 
   useEffect(() => {
     changeOffset(1); // 検索したらページネーションをリセット
-  }, [searchTerm]);
+  }, [searchTerm, changeOffset]);
 
   useEffect(() => {
     setFilteredPokemonList(filteredList); // フィルタされたリストを更新
