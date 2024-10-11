@@ -186,14 +186,25 @@ export const usePageHook = () => {
     return await response.json();
   };
 
+
+  type PokemonTypeResult = {
+    name: string;
+    url: string;
+  };
+  
+  type PokemonTypeDetails = {
+    name: string;
+    names: { language: { name: string }; name: string }[];
+  };
+  
   const fetchPokemonTypes = async () => {
     try {
-      const typeData = await fetchAllPokemonTypes();
+      const typeData: { results: PokemonTypeResult[] } = await fetchAllPokemonTypes();
       const types = await Promise.all(
-        typeData.results.map(async (type: any) => {
+        typeData.results.map(async (type: PokemonTypeResult) => {
           const response = await fetch(type.url); // 各タイプの詳細URLを使用
           if (response.ok) {
-            const data = await response.json();
+            const data: PokemonTypeDetails = await response.json();
             const jaName =
               data.names.find(
                 (name: { language: { name: string }; name: string }) => name.language.name === 'ja'
