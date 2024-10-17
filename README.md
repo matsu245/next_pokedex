@@ -1,9 +1,10 @@
 
 next.jsの勉強用に作成したアプリケーションです。  
-[https://pokedex-five-beryl.vercel.app/](https://pokedex-five-beryl.vercel.app/)  
+[https://pokedex-five-beryl.vercel.app/](https://pokedex-five-beryl.vercel.app/)
 [PokeAPI](https://pokeapi.co/)からデータを取得しています。  
 
 修正予定
+- 検索とページネーションをURLのパラメータで保持する。
 - 複数ワードの検索に対応する。
 - モーダル表示時に、閉じずに前後に移動できるようにする。
 - スケルトンスクリーンの実装。
