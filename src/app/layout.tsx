@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <div className='cmn-container bg-opacity-50 p-10 pt-28 min-h-screen overflow-hidden relative before:fixed before:w-full before:h-full before:z-20 before:inset-0 before:pointer-events-none md:min-w-[1200px]'>
+        <div className='cmn-container bg-opacity-50 p-10 pt-28 min-h-screen overflow-hidden relative before:fixed before:w-full before:h-full before:z-50 before:inset-0 before:pointer-events-none md:min-w-[1200px]'>
         <Header />
           {children}
         </div>

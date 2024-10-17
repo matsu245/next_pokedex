@@ -29,7 +29,7 @@ export const Modal: React.FC<Props> = ({ isOpen, onClose, children }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50 backdrop-blur-sm" onClick={handleOverlayClick}>
+    <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-60 backdrop-blur-sm" onClick={handleOverlayClick}>
       <div className="bg-white p-6 rounded-lg shadow-lg w-[clamp(200px,500px,90%)] relative">
         <button onClick={onClose} className="absolute w-7 h-7 top-2 right-2 text-zinc-600 text-2xl grid place-items-center">
           &times;
