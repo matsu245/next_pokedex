@@ -1,6 +1,6 @@
 
 next.jsの勉強用に作成したアプリケーションです。  
-[https://pokedex-five-beryl.vercel.app/](https://pokedex-five-beryl.vercel.app/)
+[https://pokedex-five-beryl.vercel.app/](https://pokedex-five-beryl.vercel.app/)  
 [PokeAPI](https://pokeapi.co/)からデータを取得しています。  
 
 修正予定
