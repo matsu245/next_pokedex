@@ -111,7 +111,7 @@ export default function Home() {
             ))}
           </p>
           { selectedPokemon?.image.artwork  && (
-          <figure className='w-[clamp(calc(200px-3rem),380px,100%)] aspect-square m-[auto]'><Image src={selectedPokemon?.image.artwork} alt="" width={500} height={500}/></figure>
+          <figure className='w-[clamp(calc(200px-3rem),380px,100%)] aspect-square m-[auto]'><Image src={selectedPokemon?.image.artwork} alt="" width={500} height={500} unoptimized/></figure>
             )
           }
           <h1 className='text-center font-bold text-2xl'>{selectedPokemon?.jaName}</h1>

@@ -30,7 +30,7 @@ export const List: React.FC<Props> = ({ detailedPokemonList, paginatedPokemonLis
               }}
             >
               { result.image.thumb  && (
-                <figure><Image src={result.image.thumb} alt="" width={96} height={96}/></figure>
+                <figure><Image src={result.image.thumb} alt="" width={96} height={96} unoptimized/></figure>
                 )
               }
               <p>{result.jaName}</p>
